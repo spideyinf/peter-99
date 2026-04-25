@@ -1,127 +1,136 @@
-import Logos from "components/atoms/logos";
-import Card from "components/organisms/card";
-import {
-  BeakerIcon,
-  BookmarkIcon,
-  ChevronDownIcon,
-  CubeTransparentIcon,
-  PhoneXMarkIcon,
-  Bars3Icon,
-  PencilIcon,
-  PhotoIcon,
-} from "@heroicons/react/24/outline";
-import Button from "components/atoms/button";
-import CopyButton from "components/molecules/copy-button";
+import { useState, useEffect } from 'react';
+import { ExclamationCircleIcon, ArrowsUpDownIcon } from '@heroicons/react/24/outline';
+import { AmountPanel, Skeleton } from 'components/currency-swap';
+import type { PriceEntry } from 'types/PriceEntry';
+import type { Token } from 'types/Token';
+import { PRICES_URL } from 'components/currency-swap/utils';
 
-const features = [
-  {
-    name: "Vite 7",
-    description:
-      "Next-generation frontend tooling with lightning-fast HMR and optimized builds.",
-    logo: CubeTransparentIcon,
-    docs: "https://vitejs.dev/",
-  },
-  {
-    name: "React 19",
-    description: "Latest React with improved performance and new features.",
-    logo: PencilIcon,
-    docs: "https://react.dev/",
-  },
-  {
-    name: "TypeScript 5.9",
-    description:
-      "Strict type checking for robust and maintainable code.",
-    logo: BookmarkIcon,
-    docs: "https://www.typescriptlang.org/",
-  },
-  {
-    name: "Tailwind CSS v4",
-    description: "CSS-first utility framework with new directives and improved DX.",
-    logo: PhotoIcon,
-    docs: "https://tailwindcss.com/",
-  },
-  {
-    name: "ESLint 9",
-    description: "Flat config format for modern JavaScript and TypeScript linting.",
-    logo: BeakerIcon,
-    docs: "https://eslint.org/",
-  },
-  {
-    name: "Prettier 3",
-    description: "Opinionated code formatter for consistent code style.",
-    logo: Bars3Icon,
-    docs: "https://prettier.io/",
-  },
-  {
-    name: "Atomic Design",
-    description:
-      "Structured component architecture from atoms to organisms.",
-    logo: PhoneXMarkIcon,
-    docs: "https://bradfrost.com/blog/post/atomic-web-design/",
-  },
-  {
-    name: "Path Aliases",
-    description:
-      "Clean imports using path aliases for components, app, and hooks.",
-    logo: ChevronDownIcon,
-    docs: "https://github.com/vitejs/vite/issues/88#issuecomment-762415200",
-  },
-];
+export default function App() {
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [fetching, setFetching] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
 
-function App() {
+  const [fromToken, setFromToken] = useState<Token | null>(null);
+  const [toToken, setToToken] = useState<Token | null>(null);
+  const [fromAmount, setFromAmount] = useState('');
+
+  useEffect(() => {
+    fetch(PRICES_URL)
+      .then((r) => r.json())
+      .then((data: PriceEntry[]) => {
+        const map = new Map<string, number>();
+        for (const entry of data) {
+          if (entry.price > 0) map.set(entry.currency, entry.price);
+        }
+        const list: Token[] = Array.from(map.entries())
+          .map(([symbol, price]) => ({ symbol, price }))
+          .sort((a, b) => a.symbol.localeCompare(b.symbol));
+        setTokens(list);
+        setFromToken(list.find((t) => t.symbol === 'ETH') ?? list[0]);
+        setToToken(list.find((t) => t.symbol === 'USDC') ?? list[1]);
+      })
+      .catch(() => setFetchError(true))
+      .finally(() => setFetching(false));
+  }, []);
+
+  const handleFlip = () => {};
+
+  const handleSubmit = () => {};
+
   return (
-    <main>
-      <header className="pt-16 z-10 relative max-w-screen-lg xl:max-w-screen-xl mx-auto">
-        <h3 className="text-2xl sm:text-4xl leading-none font-bold tracking-tight text-purple-200">
-          <span className="text-[gold] opacity-75">Vital</span> @ Vite Template
-        </h3>
-        <h1 className="text-6xl lg:text-7xl leading-none font-extrabold tracking-tight mb-8 sm:mb-10 text-purple-400">
-          React 19 + TypeScript + Tailwind v4
-        </h1>
-        <p className="max-w-screen-lg text-lg sm:text-xl  text-gray-300 font-medium mb-10 sm:mb-11">
-          Bootstrap your web projects faster than ever. Comes with:{" "}
-          <code className="font-mono text-blue-500 font-bold">Tailwind CSS v4</code>
-          , <code className="font-mono text-blue-500 font-bold">Commitlint</code>
-          , <code className="font-mono text-blue-500 font-bold">ESLint</code>,{" "}
-          <code className="font-mono text-blue-500 font-bold">Prettier</code>,{" "}
-          <code className="font-mono text-blue-500 font-bold">lint-staged</code>{" "}
-          and{" "}
-          <code className="font-mono text-blue-500 font-bold">
-            Atomic Design pattern
-          </code>
-          . Configured and ready to go.
-        </p>
-        <div className="absolute top-12 right-12 opacity-10 lg:opacity-50">
-          <Logos.Vite className="w-56 h-56" />
+    <div className="w-full h-full max-w-md mx-auto my-20 px-2">
+      <div className="rounded-3xl bg-gray-800 border border-gray-600/40 shadow-2xl shadow-black/30">
+        <div className="px-6 pt-6 pb-4">
+          <h5 className="text-white text-xl font-bold tracking-tight">
+            Currency Swap
+          </h5>
+          <p className="text-gray-400 text-xs mt-0.5">
+            Powered by 99 Technology
+          </p>
         </div>
-      </header>
-      <section className="max-w-screen-lg xl:max-w-screen-xl mx-auto">
-        <div className="sm:flex sm:space-x-6 space-y-4 sm:space-y-0 items-center">
-          <a href="https://github.com/jvidalv/vital">
-            <Button>Visit on Github</Button>
-          </a>
-          <CopyButton text="npx degit jvidalv/vital my-app" />
+
+        <div className="h-px bg-gray-600/40 mx-6" />
+
+        <div className="px-6 pb-6 pt-5">
+          {fetching && (
+            <div className="space-y-3">
+              <Skeleton className="h-28" />
+              <div className="flex justify-center">
+                <Skeleton className="h-9 w-9 rounded-xl" />
+              </div>
+              <Skeleton className="h-28" />
+              <Skeleton className="h-12 mt-2" />
+            </div>
+          )}
+
+          {!fetching && fetchError && (
+            <div className="rounded-2xl bg-red-500/8 border border-red-500/25 p-8 text-center">
+              <ExclamationCircleIcon className="w-10 h-10 text-red-400 mx-auto mb-3" />
+              <p className="text-red-300 font-semibold mb-1">
+                Failed to load prices
+              </p>
+              <p className="text-gray-500 text-sm">
+                Check your connection and refresh
+              </p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="mt-4 px-4 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-400 text-sm font-medium transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!fetching && !fetchError && (
+            <form onSubmit={handleSubmit} noValidate>
+              <AmountPanel
+                label="Amount to send"
+                amount={fromAmount}
+                token={fromToken}
+                tokens={tokens}
+                onAmountChange={setFromAmount}
+                onTokenChange={setFromToken}
+                excludeToken={toToken?.symbol}
+              />
+
+              <div className="flex items-center justify-center my-2.5 relative z-10">
+                <button
+                  type="button"
+                  onClick={handleFlip}
+                  className="group p-2.5 rounded-xl bg-gray-700 hover:bg-purple-600/80 border border-gray-500/60 hover:border-purple-500/50 text-gray-300 hover:text-white transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                  title="Flip tokens"
+                >
+                  <ArrowsUpDownIcon className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
+                </button>
+              </div>
+
+              <AmountPanel
+                label="Amount to receive"
+                amount=""
+                token={toToken}
+                tokens={tokens}
+                onTokenChange={setToToken}
+                excludeToken={fromToken?.symbol}
+                readOnly
+              />
+
+              <button
+                type="submit"
+                disabled={!fromAmount}
+                className="mt-4 w-full py-4 rounded-2xl font-bold text-sm tracking-widest uppercase transition-all duration-200
+                  bg-purple-600 hover:bg-purple-500
+                  active:scale-[0.98]
+                  text-white
+                  disabled:opacity-35 disabled:cursor-not-allowed disabled:active:scale-100
+                  focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-gray-800"
+              >
+                Confirm Swap
+              </button>
+            </form>
+          )}
         </div>
-      </section>
-      <section className="max-w-screen-lg xl:max-w-screen-xl mx-auto grid grid-cols-10 gap-4">
-        {features.map((props, index) => (
-          <div key={index} className="col-span-10 sm:col-span-5">
-            <Card
-              title={props.name}
-              description={props.description}
-              Icon={props.logo}
-              href={props.docs}
-            />
-          </div>
-        ))}
-      </section>
-      <footer className="pb-16 max-w-screen-lg xl:max-w-screen-xl mx-auto text-center sm:text-right text-gray-400 font-bold">
-        <a href="https://github.com/jvidalv">
-          Josep Vidal @ {new Date().getFullYear()}
-        </a>
-      </footer>
-    </main>
+      </div>
+    </div>
   );
 }
-
-export default App;

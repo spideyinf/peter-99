@@ -25,7 +25,8 @@
     "paths": {
       "app/*": ["src/app/*"],
       "components/*": ["src/components/*"],
-      "hooks/*": ["src/hooks/*"]
+      "hooks/*": ["src/hooks/*"],
+      "types/*": ["src/types/*"]
     }
   },
   "include": ["src"]

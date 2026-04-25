@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { ICON_BASE } from './utils';
 
-export const TokenIcon = ({ symbol, size = 28 }: { symbol: string; size?: number }) => {
+export const TokenIcon = ({
+  symbol,
+  size = 28
+}: {
+  symbol: string;
+  size?: number;
+}) => {
   const [failedSymbol, setFailedSymbol] = useState<string | null>(null);
   const failed = failedSymbol === symbol;
 
