@@ -48,9 +48,7 @@ export const AmountPanel = ({
         id={readOnly ? 'output-amount' : 'input-amount'}
         type={readOnly ? 'text' : 'number'}
         value={
-          readOnly && amount
-            ? formatNumber(parseFloat(amount), 6)
-            : amount
+          readOnly && amount ? formatNumber(parseFloat(amount), 6) : amount
         }
         readOnly={readOnly}
         disabled={disabled}
@@ -72,7 +70,7 @@ export const AmountPanel = ({
     </div>
 
     <p className="mt-2 text-xs min-h-4">
-      {usdValue !== undefined && usdValue > 0 ? (
+      {!readOnly && usdValue !== undefined && usdValue > 0 ? (
         <span className="text-gray-400">
           {'≈ $'}
           {formatNumber(usdValue, 2)}
