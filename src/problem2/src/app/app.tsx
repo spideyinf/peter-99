@@ -85,7 +85,7 @@ export default function App() {
 
   return (
     <div className="w-full h-full max-w-md mx-auto my-20 px-2">
-      <div className="rounded-3xl bg-gray-800 border border-gray-600/40 shadow-2xl shadow-black/30">
+      <div className="rounded-3xl bg-gray-900/95 border border-gray-600/40 shadow-2xl shadow-black/30">
         <div className="px-6 pt-6 pb-4">
           <h5 className="text-white text-xl font-bold tracking-tight">
             Currency Swap
