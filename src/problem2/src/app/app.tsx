@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import {
   ExclamationCircleIcon,
   ArrowPathIcon,
-  ArrowsUpDownIcon,
   CheckCircleIcon,
   InformationCircleIcon
 } from '@heroicons/react/24/outline';
@@ -45,13 +44,6 @@ export default function App() {
       return 'Cannot swap the same token';
     return null;
   }, [fromAmount, fromToken, toToken]);
-
-  const handleFlip = () => {
-    const capturedTo = toAmount;
-    setFromToken(toToken);
-    setToToken(fromToken);
-    setFromAmount(capturedTo);
-  };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -171,17 +163,7 @@ export default function App() {
                 disabled={swap.isPending}
               />
 
-              <div className="flex items-center justify-center my-2.5 relative z-10">
-                <button
-                  type="button"
-                  onClick={handleFlip}
-                  disabled={swap.isPending}
-                  className="group p-2.5 rounded-xl bg-gray-700 hover:bg-purple-600/80 border border-gray-500/60 hover:border-purple-500/50 text-gray-300 hover:text-white transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
-                  title="Flip tokens"
-                >
-                  <ArrowsUpDownIcon className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
-                </button>
-              </div>
+              <div className="my-4" />
 
               <AmountPanel
                 label="Amount to receive"
