@@ -62,3 +62,7 @@ Inside `.sort()`, both `getPriority(lhs.blockchain)` and `getPriority(rhs.blockc
 ### 7. `formattedBalances` computed but never used, this should be used and memoized
 
 The `.map()` on line 56 runs on every render, allocates a new array, and the result is discarded. `rows` is built from `sortedBalances`, not `formattedBalances`. Wrap and use it with `useMemo`
+
+### 8. Prototype pollution via bracket access on `prices`
+
+`prices[balance.currency]` uses an externally sourced string as an object key with no guard. If `balance.currency` is `__proto__`, `constructor`, or `hasOwnProperty`, the lookup walks the prototype chain and returns unexpected values — or in a mutable context, pollutes it. Suggest to use `Object.prototype.hasOwnProperty.call` to restrict access to own properties only, defaulting to `0` for unknown keys.

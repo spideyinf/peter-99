@@ -48,7 +48,7 @@ const WalletPage: React.FC<Props> = ({ children, ...rest }) => {
   );
 
   const rows = formattedBalances.map((balance: FormattedWalletBalance) => {
-    const usdValue = prices[balance.currency] * balance.amount;
+    const usdValue = (Object.prototype.hasOwnProperty.call(prices, balance.currency) ? prices[balance.currency] : 0) * balance.amount;
     return (
       <WalletRow
         className={classes.row}
